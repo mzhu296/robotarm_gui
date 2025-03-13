@@ -323,30 +323,42 @@ def controls(client) -> None:
                 ui.button(on_click=lambda: send_position_l(can_id.value, 0)).props('round flat icon=exposure_zero')
                 ui.button(on_click=lambda: send_position_l(can_id.value, 1)).props('round flat icon=skip_next')
                 
-        with ui.card().bind_visibility_from(mode, 'value', value=1):
+        with ui.card().bind_visibility_from(mode, 'value', value=1).classes('w-full'):
             ui.markdown('##### Rboot Arm Control')
-            with ui.row():
-                with ui.column():
+
+            # A row that can wrap if needed
+            with ui.row().classes('flex-wrap w-full'):
+                with ui.column().classes('w-1/6'):
                     ui.label('J1')
-                    j1 = ui.slider(min=-175.00, max=175.00, value=0)
-                with ui.column():
+                    j1 = ui.slider(min=-175.00, max=175.00, value=0).classes('w-full')
+
+                with ui.column().classes('w-1/6'):
                     ui.label('J2')
-                    j2 = ui.slider(min=-115.00, max=75.00, value=0)
-                with ui.column():
+                    j2 = ui.slider(min=-115.00, max=75.00, value=0).classes('w-full')
+
+                with ui.column().classes('w-1/6'):
                     ui.label('J3')
-                    j3 = ui.slider(min=-60.00, max=90.00, value=0)
-                with ui.column():
+                    j3 = ui.slider(min=-60.00, max=90.00, value=0).classes('w-full')
+
+                with ui.column().classes('w-1/6'):
                     ui.label('J4')
-                    j4 = ui.slider(min=-180.00, max=180.00, value=0)
-                with ui.column():
+                    j4 = ui.slider(min=-180.00, max=180.00, value=0).classes('w-full')
+
+                with ui.column().classes('w-1/6'):
                     ui.label('J5')
-                    j5 = ui.slider(min=-110.00, max=120.00, value=0)
-                with ui.column():
+                    j5 = ui.slider(min=-110.00, max=120.00, value=0).classes('w-full')
+
+                with ui.column().classes('w-1/6'):
                     ui.label('J6')
-                    j6 = ui.slider(min=-180, max=180, value=0)
+                    j6 = ui.slider(min=-180, max=180, value=0).classes('w-full')
+
             with ui.row():
-                ui.button("Home", on_click=lambda: send_6d_position(0, [j1.value, j2.value, j3.value, j4.value, j5.value, j6.value])).props('round flat')
-                ui.button("Send", on_click=lambda: send_6d_position(1, [j1.value, j2.value, j3.value, j4.value, j5.value, j6.value])).props('round flat')
+                ui.button("Home", on_click=lambda: send_6d_position(
+                    0, [j1.value, j2.value, j3.value, j4.value, j5.value, j6.value])
+                ).props('round flat')
+                ui.button("Send", on_click=lambda: send_6d_position(
+                    1, [j1.value, j2.value, j3.value, j4.value, j5.value, j6.value])
+                ).props('round flat')
 
         with ui.row():
             with ui.card().bind_visibility_from(mode, 'value', value=1):
