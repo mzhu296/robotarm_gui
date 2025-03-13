@@ -257,52 +257,110 @@ def controls(client) -> None:
                                     .props('icon=restart_alt round') \
                                     .tooltip('Reboot motor')
                 # m1_pos = ui.label().bind_text_from(v, 'id')
-    with ui.row():
-        with ui.card().bind_visibility_from(mode, 'value', value=1):
-            ui.markdown(f'##### Joint Control')
-            with ui.row():
-                with ui.column():
-                    can_id = ui.number('Joint id', value=0)
-                with ui.column():
-                    position = ui.number('Input position', value=0)
-                    def send_position_l(id, loc): send_position(id, loc, position.value)
-            with ui.row():
-                    ui.button(on_click=lambda: send_position_l(can_id.value, -1)).props('round flat icon=skip_previous')
-                    ui.button(on_click=lambda: send_position_l(can_id.value, 0)).props('round flat icon=exposure_zero')
-                    ui.button(on_click=lambda: send_position_l(can_id.value, 1)).props('round flat icon=skip_next')
+    # with ui.row():
+    #     with ui.card().bind_visibility_from(mode, 'value', value=1):
+    #         ui.markdown(f'##### Joint Control')
+    #         with ui.row():
+    #             with ui.column():
+    #                 can_id = ui.number('Joint id', value=0)
+    #             with ui.column():
+    #                 position = ui.number('Input position', value=0)
+    #                 def send_position_l(id, loc): send_position(id, loc, position.value)
+    #         with ui.row():
+    #                 ui.button(on_click=lambda: send_position_l(can_id.value, -1)).props('round flat icon=skip_previous')
+    #                 ui.button(on_click=lambda: send_position_l(can_id.value, 0)).props('round flat icon=exposure_zero')
+    #                 ui.button(on_click=lambda: send_position_l(can_id.value, 1)).props('round flat icon=skip_next')
             
-        with ui.card().bind_visibility_from(mode, 'value', value=1):
-            ui.markdown(f'##### Rboot Arm Control')
-            with ui.row():
-                with ui.column():
-                    j1 = ui.number('J1', min=-175.00, max=175.00, value=0)
-                with ui.column():
-                    j2 = ui.number('J2', min=-115.00, max=75.00, value=0)
-                with ui.column():
-                    j3 = ui.number('J3', min=-60.00, max=90.00, value=0)
-                with ui.column():
-                    j4 = ui.number('J4', min=-180.00, max=180.00, value=0)
-                with ui.column():
-                    j5 = ui.number('J5', min=-110.00, max=120.00, value=0)
-                with ui.column():
-                    j6 = ui.number('J6', min=-180, max=180, value=0)
-            with ui.row():
-                    ui.button("Home", on_click=lambda: send_6d_position(0, [j1.value, j2.value, j3.value, j4.value, j5.value, j6.value])).props('round flat')
-                    ui.button("Send", on_click=lambda: send_6d_position(1, [j1.value, j2.value, j3.value, j4.value, j5.value, j6.value])).props('round flat')
+    #     with ui.card().bind_visibility_from(mode, 'value', value=1):
+    #         ui.markdown(f'##### Rboot Arm Control')
+    #         with ui.row():
+    #             with ui.column():
+    #                 j1 = ui.number('J1', min=-175.00, max=175.00, value=0)
+    #             with ui.column():
+    #                 j2 = ui.number('J2', min=-115.00, max=75.00, value=0)
+    #             with ui.column():
+    #                 j3 = ui.number('J3', min=-60.00, max=90.00, value=0)
+    #             with ui.column():
+    #                 j4 = ui.number('J4', min=-180.00, max=180.00, value=0)
+    #             with ui.column():
+    #                 j5 = ui.number('J5', min=-110.00, max=120.00, value=0)
+    #             with ui.column():
+    #                 j6 = ui.number('J6', min=-180, max=180, value=0)
+    #         with ui.row():
+    #                 ui.button("Home", on_click=lambda: send_6d_position(0, [j1.value, j2.value, j3.value, j4.value, j5.value, j6.value])).props('round flat')
+    #                 ui.button("Send", on_click=lambda: send_6d_position(1, [j1.value, j2.value, j3.value, j4.value, j5.value, j6.value])).props('round flat')
 
+    # with ui.row():
+    #     with ui.card().bind_visibility_from(mode, 'value', value=1):
+    #         ui.markdown(f'##### Gripper Control')
+    #         with ui.row():
+    #             with ui.column():
+    #                 gripper_id = ui.number('Gripper id', value=7)
+    #             with ui.column():
+    #                 torque = ui.number('Input torque', value=0)
+    #                 def send_torque_l(id, loc): send_torque(id, loc, torque.value)
+    #             # with ui.column():
+    #             #     position = ui.number('Input position', value=0)
+    #             #     def send_position_l(id, loc): send_position(id, loc, position.value)
+    #         with ui.row():
+    #                 ui.button(on_click=lambda: send_torque_l(gripper_id.value, -1)).props('round flat icon=skip_previous')
+    #                 ui.button(on_click=lambda: send_torque_l(gripper_id.value, 0)).props('round flat icon=exposure_zero')
+    #                 ui.button(on_click=lambda: send_torque_l(gripper_id.value, 1)).props('round flat icon=skip_next')
     with ui.row():
         with ui.card().bind_visibility_from(mode, 'value', value=1):
-            ui.markdown(f'##### Gripper Control')
+            ui.markdown('##### Joint Control')
             with ui.row():
                 with ui.column():
-                    gripper_id = ui.number('Gripper id', value=7)
+                    ui.label('Joint id')
+                    can_id = ui.slider(min=0, max=10, value=0, step=1)
                 with ui.column():
-                    torque = ui.number('Input torque', value=0)
-                    def send_torque_l(id, loc): send_torque(id, loc, torque.value)
-                # with ui.column():
-                #     position = ui.number('Input position', value=0)
-                #     def send_position_l(id, loc): send_position(id, loc, position.value)
+                    ui.label('Input position')
+                    position = ui.slider(min=-180, max=180, value=0)
+                    def send_position_l(id, loc):
+                        send_position(id, loc, position.value)
             with ui.row():
+                ui.button(on_click=lambda: send_position_l(can_id.value, -1)).props('round flat icon=skip_previous')
+                ui.button(on_click=lambda: send_position_l(can_id.value, 0)).props('round flat icon=exposure_zero')
+                ui.button(on_click=lambda: send_position_l(can_id.value, 1)).props('round flat icon=skip_next')
+                
+        with ui.card().bind_visibility_from(mode, 'value', value=1):
+            ui.markdown('##### Rboot Arm Control')
+            with ui.row():
+                with ui.column():
+                    ui.label('J1')
+                    j1 = ui.slider(min=-175.00, max=175.00, value=0)
+                with ui.column():
+                    ui.label('J2')
+                    j2 = ui.slider(min=-115.00, max=75.00, value=0)
+                with ui.column():
+                    ui.label('J3')
+                    j3 = ui.slider(min=-60.00, max=90.00, value=0)
+                with ui.column():
+                    ui.label('J4')
+                    j4 = ui.slider(min=-180.00, max=180.00, value=0)
+                with ui.column():
+                    ui.label('J5')
+                    j5 = ui.slider(min=-110.00, max=120.00, value=0)
+                with ui.column():
+                    ui.label('J6')
+                    j6 = ui.slider(min=-180, max=180, value=0)
+            with ui.row():
+                ui.button("Home", on_click=lambda: send_6d_position(0, [j1.value, j2.value, j3.value, j4.value, j5.value, j6.value])).props('round flat')
+                ui.button("Send", on_click=lambda: send_6d_position(1, [j1.value, j2.value, j3.value, j4.value, j5.value, j6.value])).props('round flat')
+
+        with ui.row():
+            with ui.card().bind_visibility_from(mode, 'value', value=1):
+                ui.markdown('##### Gripper Control')
+                with ui.row():
+                    with ui.column():
+                        ui.label('Gripper id')
+                        gripper_id = ui.slider(min=0, max=10, value=7, step=1)
+                    with ui.column():
+                        ui.label('Input torque')
+                        torque = ui.slider(min=-100, max=100, value=0)
+                        def send_torque_l(id, loc):
+                            send_torque(id, loc, torque.value)
+                with ui.row():
                     ui.button(on_click=lambda: send_torque_l(gripper_id.value, -1)).props('round flat icon=skip_previous')
                     ui.button(on_click=lambda: send_torque_l(gripper_id.value, 0)).props('round flat icon=exposure_zero')
                     ui.button(on_click=lambda: send_torque_l(gripper_id.value, 1)).props('round flat icon=skip_next')
