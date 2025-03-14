@@ -1,76 +1,20 @@
-# import openai
-# import can_data
-# import struct
-# import re
-# import speech_recognition as sr  # 🗣️ Add speech recognition
-
-# # Set up the DeepSeek AI client with LM Studio
-# client = openai.OpenAI(
-#     api_key="EMPTY",  # No API key needed for LM Studio
-#     base_url="http://localhost:1234/v1"  # Ensure LM Studio is running
-# )
-
-# # Function to generate a response from AI
-# def generate_response(prompt):
-#     response = client.chat.completions.create(
-#         model="deepseek-r1",
-#         messages=[
-#             {"role": "system", "content": "You are a robotic control AI assistant. "
-#              "Always respond with six numerical joint values, separated by commas, including negative values where appropriate. "
-#              "Example: '-14, 25, -45, 0, 3, -25'."},
-#             {"role": "user", "content": prompt}
-#         ],
-#         temperature=0.7,
-#         max_tokens=200
-#     )
-#     return response.choices[0].message.content
-
-# import re
-
-# def process_ai_command(udp_client, command_text):
-#     ai_response = generate_response(command_text)
-#     print(f"🔹 AI Response: {ai_response}")  # Debugging output
-
-#     # ✅ Use regex to extract negative & positive numbers
-#     joint_values = re.findall(r'-?\d+\.\d+|-?\d+', ai_response)  
-#     joint_values = [float(x) for x in joint_values][:6]  # ✅ Ensure exactly 6 values
-
-#     print(f"🔹 Extracted joint values: {joint_values}")  # Debugging output
-
-#     if len(joint_values) == 6:
-#         send_joint_positions(udp_client, joint_values)
-#         return f"✅ Sent command to move joints: {joint_values}"
-#     else:
-#         return f"⚠️ Error: AI response did not contain 6 valid joint positions. Extracted: {joint_values}"
-    
-# # Function to send joint positions via UDP
-# def send_joint_positions(udp_client, joint_angles):
-#     for i, angle in enumerate(joint_angles):
-#         cid = i + 1  # Motor ID (J1 = 1, J2 = 2, ...)
-#         reduction_value = 50  # Adjust based on your robot's motor settings
-#         motor_cnt = angle / 360.0 * reduction_value
-#         pos = struct.pack('<f', float(motor_cnt))
-#         cmd2 = struct.pack('<HH', 60, 10)
-
-#         udp_client.send_message(
-#             cid,
-#             can_data.command_id['Set_Input_Pos'],
-#             pos,
-#             cmd2,
-#             can_data.Message_type['short']
-#         )
 import openai
 import can_data
 import struct
 import re
 import time
-import speech_recognition as sr 
+import pyaudio
+import json
+from vosk import Model, KaldiRecognizer
 
 # Set up DeepSeek AI client
 client = openai.OpenAI(
     api_key="EMPTY",
     base_url="http://localhost:1234/v1"
 )
+
+# Load Vosk model (Ensure the "model" directory exists)
+vosk_model = Model("model")
 
 # Predefined positions for special commands
 PRESET_MOVEMENTS = {
@@ -166,88 +110,33 @@ def send_idle_mode(udp_client):
             can_data.Message_type['short']
         )
 
-# 🗣️ Voice Control Function
+# 🗣️ Voice Control Function using Vosk
 def voice_command(udp_client):
-    recognizer = sr.Recognizer()
-    with sr.Microphone() as source:
-        print("Listening for voice command...")
-        try:
-            recognizer.adjust_for_ambient_noise(source)  # Adjust for background noise
-            audio = recognizer.listen(source)  # Capture audio
+    recognizer = KaldiRecognizer(vosk_model, 16000)
+    
+    mic = pyaudio.PyAudio()
+    stream = mic.open(format=pyaudio.paInt16, channels=1, rate=16000, input=True, frames_per_buffer=8192)
+    stream.start_stream()
 
-            # Convert speech to text
-            command_text = recognizer.recognize_google(audio)
-            print(f"Recognized: {command_text}")  # Debugging output
+    print("🎤 Listening for voice command...")
 
-            return process_ai_command(udp_client, command_text)
+    try:
+        while True:
+            data = stream.read(4096, exception_on_overflow=False)
+            if recognizer.AcceptWaveform(data):
+                result = json.loads(recognizer.Result())
+                command_text = result.get("text", "").strip()
 
-        except sr.UnknownValueError:
-            return "Could not understand the voice command."
-        except sr.RequestError:
-            return "Speech Recognition service unavailable."
+                if command_text:
+                    print(f"✅ Recognized: {command_text}")
+                    stream.stop_stream()
+                    stream.close()
+                    mic.terminate()
+                    return process_ai_command(udp_client, command_text)
 
-
-# import openai
-# import can_data
-# import struct
-
-
-# # Set up the DeepSeek client with LM Studio
-# client = openai.OpenAI(
-#     api_key="EMPTY",  # No API key needed for LM Studio
-#     base_url="http://localhost:1234/v1"  # Ensure LM Studio is running here
-# )
-
-# # Function to send a text command to DeepSeek and return a response
-# def generate_response(prompt):
-#     response = client.chat.completions.create(
-#         model="deepseek-r1",
-#         messages=[
-#             {"role": "system", "content": "You are a robotic control AI assistant. "
-#              "Always respond with six numerical joint values, separated by commas, including negative values where appropriate. "
-#              "Example format: 'J1: -30, J2: 45, J3: 60, J4: -20, J5: 10, J6: -5'."},
-#             {"role": "user", "content": prompt}
-#         ],
-#         temperature=0.7,
-#         max_tokens=200
-#     )
-#     return response.choices[0].message.content
-
-# # Function to interpret AI commands and send movement instructions
-# import re
-
-# def process_ai_command(udp_client, command_text):
-#     ai_response = generate_response(command_text)
-#     print(f"🔹 AI Response: {ai_response}")  # Debugging output
-
-#     # ✅ Improved regex to extract negative and positive numbers
-#     joint_values = re.findall(r'-?\d+\.\d+|-?\d+', ai_response)  # Captures negative numbers
-
-#     # ✅ Convert to float and ensure exactly 6 values
-#     joint_values = [float(x) for x in joint_values][:6]
-#     print(f"🔹 Extracted joint values: {joint_values}")  # Debugging output
-
-#     if len(joint_values) == 6:
-#         send_joint_positions(udp_client, joint_values)
-#         return f"✅ Sent command to move joints: {joint_values}"
-#     else:
-#         return f"⚠️ Error: AI response did not contain 6 valid joint positions. Extracted: {joint_values}"
-
-
-# # Function to send joint positions via UDP
-# def send_joint_positions(udp_client, joint_angles):
-#     for i, angle in enumerate(joint_angles):
-#         cid = i + 1  # Motor ID (J1 = 1, J2 = 2, ...)
-#         position = angle
-#         reduction_value = 50  # Adjust based on your robot's motor settings
-#         motor_cnt = position / 360.0 * reduction_value
-#         pos = struct.pack('<f', float(motor_cnt))
-#         cmd2 = struct.pack('<HH', 60, 10)
-
-#         udp_client.send_message(
-#             cid,
-#             can_data.command_id['Set_Input_Pos'],
-#             pos,
-#             cmd2,
-#             can_data.Message_type['short']
-#         )
+    except Exception as e:
+        print(f"❌ Error: {str(e)}")
+        stream.stop_stream()
+        stream.close()
+        mic.terminate()
+        return "Error processing voice command."
