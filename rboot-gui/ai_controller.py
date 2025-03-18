@@ -45,7 +45,6 @@ def generate_response(prompt):
         messages=[
             {"role": "system", "content": "You are a robotic control AI assistant. "
              "Always respond with six numerical joint values, separated by commas, including negative values where appropriate. "
-             "Example: '-30, 45, 60, -20, 10, -5'. "
              "Recognize and respond correctly to high-level commands like 'Move to home position', 'Wave hello', or 'Stop movement'."},
             {"role": "user", "content": prompt}
         ],
@@ -82,6 +81,27 @@ def process_ai_command(udp_client, command_text):
         speak(response)
         send_idle_mode(udp_client)  # Send IDLE mode command
         return "Robot stopped."
+    
+    elif "tape" in command_text or "halt" in command_text:
+        response = "I will go to the tape position..."
+        print(response)
+        speak(response)
+        # send_idle_mode(udp_client)  # Send IDLE mode command
+        return "Robot stopped."
+    
+    elif "pick" in command_text or "halt" in command_text:
+        response = "OK, I will grab the tape..."
+        print(response)
+        speak(response)
+        # send_idle_mode(udp_client)  # Send IDLE mode command
+        return "gripper."
+    
+    elif "drop" in command_text or "halt" in command_text:
+        response = "OK, I will drop the tape..."
+        print(response)
+        speak(response)
+        # send_idle_mode(udp_client)  # Send IDLE mode command
+        return "gripper."
 
     # Extract numerical values for normal movement
     ai_response = generate_response(command_text)
