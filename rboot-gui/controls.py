@@ -272,7 +272,7 @@ def controls(client) -> None:
     #                 ui.button(on_click=lambda: send_position_l(can_id.value, 1)).props('round flat icon=skip_next')
             
     #     with ui.card().bind_visibility_from(mode, 'value', value=1):
-    #         ui.markdown(f'##### Rboot Arm Control')
+    #         ui.markdown(f'##### robot Arm Control')
     #         with ui.row():
     #             with ui.column():
     #                 j1 = ui.number('J1', min=-175.00, max=175.00, value=0)
@@ -324,7 +324,7 @@ def controls(client) -> None:
                 ui.button(on_click=lambda: send_position_l(can_id.value, 1)).props('round flat icon=skip_next')
                 
         with ui.card().bind_visibility_from(mode, 'value', value=1).classes('w-full'):
-            ui.markdown('##### Rboot Arm Control')
+            ui.markdown('##### robot Arm Control')
 
             # A row that can wrap if needed
             with ui.row().classes('flex-wrap w-full'):

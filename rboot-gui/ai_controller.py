@@ -82,22 +82,22 @@ def process_ai_command(udp_client, command_text):
         send_idle_mode(udp_client)  # Send IDLE mode command
         return "Robot stopped."
     
-    elif "tape" in command_text or "halt" in command_text:
-        response = "I will go to the tape position..."
+    elif "find" in command_text or "halt" in command_text:
+        response = "I will go to the ball position..."
         print(response)
         speak(response)
         # send_idle_mode(udp_client)  # Send IDLE mode command
         return "Robot stopped."
     
     elif "pick" in command_text or "halt" in command_text:
-        response = "OK, I will grab the tape..."
+        response = "OK, I will grab the ball..."
         print(response)
         speak(response)
         # send_idle_mode(udp_client)  # Send IDLE mode command
         return "gripper."
     
     elif "drop" in command_text or "halt" in command_text:
-        response = "OK, I will drop the tape..."
+        response = "OK, I will drop the ball..."
         print(response)
         speak(response)
         # send_idle_mode(udp_client)  # Send IDLE mode command

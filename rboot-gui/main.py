@@ -11,8 +11,8 @@ ui.colors(primary='#6e93d6')
 
 devices = {}
 
-ui.markdown('### Rboot GUI')
-ui.markdown('Waiting for Rboot CAN2ETH Gateway devices to be connected...').bind_visibility_from(globals(), 'devices', lambda d: not d)
+ui.markdown('### robot GUI')
+ui.markdown('Waiting for robot CAN2ETH Gateway devices to be connected...').bind_visibility_from(globals(), 'devices', lambda d: not d)
 container = ui.row()
 
 async def discovery_loop():
@@ -38,7 +38,7 @@ async def discovery_loop():
 app.on_startup(discovery_loop)
 
 if __name__ in {"__main__", "__mp_main__"}:
-    ui.run(title="Rboot GUI")
+    ui.run(title="robot GUI")
 
 
 # import asyncio
@@ -54,8 +54,8 @@ if __name__ in {"__main__", "__mp_main__"}:
 
 # devices = {}
 
-# ui.markdown('### Rboot GUI')
-# ui.markdown('Waiting for Rboot CAN2ETH Gateway devices to be connected...').bind_visibility_from(globals(), 'devices', lambda d: not d)
+# ui.markdown('### robot GUI')
+# ui.markdown('Waiting for robot CAN2ETH Gateway devices to be connected...').bind_visibility_from(globals(), 'devices', lambda d: not d)
 # container = ui.row()
 
 # async def discovery_loop():
@@ -78,4 +78,4 @@ if __name__ in {"__main__", "__mp_main__"}:
 # app.on_startup(discovery_loop)
 
 # if __name__ in {"__main__", "__mp_main__"}:
-#     ui.run(title="Rboot GUI")
+#     ui.run(title="robot GUI")
